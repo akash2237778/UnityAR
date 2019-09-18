@@ -13,11 +13,15 @@ public class Playservices : MonoBehaviour
     Firebase.FirebaseApp app;
     // Start is called before the first frame update
     int al, selected, Nselected;
-   public ModelPopup mP = new ModelPopup();
-
+    public GameObject Box;
+    public bool mAddModel = true;
+    public float x=0, y=0, z=0;
     void Start()
     {
-        ModelPopup mP = new ModelPopup();
+        x = 0.01f;
+        y = 0.05f;
+        z = 0.01f;
+
         Firebase.FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task => {
             var dependencyStatus = task.Result;
             if (dependencyStatus == Firebase.DependencyStatus.Available)
@@ -42,8 +46,8 @@ public class Playservices : MonoBehaviour
 
         });
 
-
-        FirebaseDatabase.DefaultInstance
+        Firebase.FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task => { });
+            FirebaseDatabase.DefaultInstance
   .GetReference("user")
   .ValueChanged += HandleValueChanged;
     }
@@ -69,23 +73,52 @@ public class Playservices : MonoBehaviour
                     Nselected = (int)snapshot.Child("Nselected").ChildrenCount;
                     al = (int)snapshot.Child("al").ChildrenCount;
 
-                    Debug.Log("Hellllooooo :" + snapshot.Child("al/IP0").Value);
+                    CreateObj(selected);
                     Debug.Log(selected);
                     Debug.Log(Nselected);
-                    mP.Create();
+                   
                     Debug.Log(al);
                     // Do something with snapshot...
                 }
                  });
         // Do something with the data in args.Snapshot
-        Debug.Log("Connected");
+     
     }
 
+    void CreateObj(int a) {
+        int i = 0;
+        for (i = 0; i <= a; i++) {
+            mAddModel = true;
+        }
+    }
 
     // Update is called once per frame
     void Update()
     {
-  
+        if (mAddModel)
+        {
+
+            Debug.Log("x :" + x);
+            Debug.Log("y :" + y);
+            Debug.Log("z :" + z);
+
+            Box = GameObject.CreatePrimitive(PrimitiveType.Cube);
+
+            Box.transform.parent = this.gameObject.transform;
+
+            // Adjust scale and position 
+            // (use localScale and localPosition to make it relative to the parent)
+            Box.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+            Box.transform.localPosition = new Vector3(0, y, 0);
+            Box.transform.localRotation = Quaternion.identity;
+
+            Box.gameObject.SetActive(true);
+           // x = x + 0.1f;
+            y = y + 0.8f;
+            //z = z + 0.01f;
+           // mAddModel = false;
+        }
+
     }
 }
 
